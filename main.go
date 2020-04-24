@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -26,15 +27,15 @@ func readCurrentDir() {
 
 	for _, files := range list { // list all files in directory and calcuate md5sum
 		apsoluteFilPath := path.Join(dirname, files)
-		files, err := os.Open(apsoluteFilPath)
+		f, err := os.Open(apsoluteFilPath)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer files.Close()
+		defer f.Close()
 		h := md5.New()
-		// if _, err := io.Copy(h, f); err != nil {
-		// 	log.Fatal(err)
-		// }
+		if _, err := io.Copy(h, f); err != nil {
+			log.Fatal(err)
+		}
 		// fmt.Printf("%x\n", h.Sum(nil))
 		fmt.Println("File: ", files, "md5sum: ", hex.EncodeToString(h.Sum(nil)))
 	}
